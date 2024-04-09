@@ -1,14 +1,14 @@
 "use client";
 import { useState, useEffect } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { Cookies } from "react-cookie";
 
-
-  const useAuth = (allowedRoles) => {
+const useAuth = (allowedRoles) => {
   const router = useRouter();
   const [user, setUser] = useState(null);
   const cookies = new Cookies();
+
   useEffect(() => {
     const token = cookies.get("token");
 
@@ -23,7 +23,13 @@ import { Cookies } from "react-cookie";
       router.replace("/login");
       return;
     }
-    if (!allowedRoles.includes(decodedToken.role)) {
+
+    // Check if allowedRoles is defined and not empty before using includes
+    if (
+      allowedRoles &&
+      allowedRoles.length > 0 &&
+      !allowedRoles.includes(decodedToken.role)
+    ) {
       router.replace("/unauthorized");
       return;
     }
@@ -31,11 +37,6 @@ import { Cookies } from "react-cookie";
     setUser(decodedToken);
   }, []);
 
-  // const logout = () => {
-  // cookies.remove("token");
-  // setUser(null);
-  // router.push("/login");
-  // };
   return { user };
 };
 

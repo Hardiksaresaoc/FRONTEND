@@ -4,7 +4,7 @@ import Header from "@/component/header";
 import loading from "../loading";
 
 const AdminPage = () => {
-  const { user, logout } = useAuth(["NORMAL_USER_ROLE"]);
+  const { user } = useAuth(["NORMAL_USER_ROLE"]);
 
   if (!user) {
     return null;

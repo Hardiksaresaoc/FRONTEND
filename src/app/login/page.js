@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation";
 import Header from "@/component/header";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
+import Loading from "../loading";
+
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const [touchedFields, setTouchedFields] = useState({
-    email: false,
-    password: false,
-  });
+  const [showPassword, setShowPassword] = useState(false);
+
+  const [loggedin, setLoggedin] = useState(false);
 
   const router = useRouter();
   const [cookies, setCookie] = useCookies(["token"]);
@@ -21,6 +22,7 @@ const LoginPage = () => {
     const token = cookies.token;
     if (token) {
       handleLoginSuccess(token);
+      setLoggedin(true);
     } else {
       return;
     }
@@ -29,13 +31,13 @@ const LoginPage = () => {
   const validateForm = () => {
     let newErrors = {};
 
-    if (!email) {
+    if (!email.trim()) {
       newErrors.email = "Email is required.";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Email is invalid.";
     }
 
-    if (!password) {
+    if (!password.trim()) {
       newErrors.password = "Password is required.";
     } else if (password.length < 6) {
       newErrors.password = "Password must be at least 6 characters.";
@@ -43,13 +45,6 @@ const LoginPage = () => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleInputBlur = (field) => {
-    setTouchedFields((prevTouched) => ({
-      ...prevTouched,
-      [field]: true,
-    }));
   };
 
   const submithandler = async (e) => {
@@ -67,11 +62,9 @@ const LoginPage = () => {
         { email, password },
         config
       );
-      //
-      console.log(data.token);
       if (data === 401) {
         setErrors({
-          email: "Email or password is incorrect.",
+          LOGIN: "email or password error",
         });
       } else {
         setCookie("token", data.token);
@@ -79,7 +72,41 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.error("An error occurred while logging in:", error);
-      // Display error message to the user
+
+      if (error.response && error.response.status === 401) {
+        setErrors({
+          loginError: "Email or password is incorrect.",
+        });
+      }
+    }
+  };
+
+  const handleBlur = (field) => (e) => {
+    const { value } = e.target;
+    if (!value.trim()) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: `${
+          field.charAt(0).toUpperCase() + field.slice(1)
+        } is required.`,
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [field]: "",
+      }));
+      if (field === "email" && value.trim() && !/\S+@\S+\.\S+/.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          email: "Email is invalid.",
+        }));
+      }
+      if (field === "password" && value.trim().length < 6) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          password: "Password must be at least 6 characters.",
+        }));
+      }
     }
   };
 
@@ -96,100 +123,142 @@ const LoginPage = () => {
     }
   };
 
-  return (
+  return !loggedin ? (
     <>
       <div className="main">
         <Header />
-        <section>
-          <div className="left">
-            <form>
-              <div className="form-img">
-                <img src="images/login-forn.png" alt="form-image" />
+        <section className="mainSection">
+          <div className="leftSection">
+            <form className="mainForm" onSubmit={submithandler}>
+              <div className="formImg">
+                <img
+                  src="images/ProjectForm.png"
+                  className="w100"
+                  alt="Indian Flag Tricolor"
+                  height="120"
+                  width="366"
+                />
               </div>
-              <h2>Log In</h2>
-              <div className="email">
-                <label>Email</label>
-                <div className="email-inside">
-                  <i className="fa-regular fa-envelope"></i>
-                  <input
-                    name="email"
-                    onChange={(e) => setEmail(e.target.value)}
-                    onBlur={() => handleInputBlur("email")}
-                    type="email"
-                    value={email}
-                    placeholder="Enter your email"
-                    required
-                  />
+              <div className="lowerForm">
+                <h2 className="formTag">Log In</h2>
+                <div className="formInput">
+                  <div className="inputInside">
+                    <label htmlFor="email" className="filled">
+                      Email
+                    </label>
+                    <div className="inputIcon">
+                      <i className="fa-solid fa-envelope formIcon"></i>
+                    </div>
+                    <input
+                      className="inputField"
+                      name="email"
+                      onChange={(e) => setEmail(e.target.value)}
+                      onBlur={handleBlur("email")}
+                      type="email"
+                      value={email}
+                      placeholder="Enter your email"
+                      required
+                    />
+                    {errors.email && (
+                      <p style={{ color: "red", fontSize: "14px" }}>
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="inputInside">
+                    <label htmlFor="password" className="filled">
+                      Password
+                    </label>
+                    <div className="inputIcon">
+                      <i className="fa-solid fa-key keyIcon"></i>
+
+                      <i
+                        className={
+                          showPassword
+                            ? "fa-regular fa-eye eyeIcon formIcon"
+                            : "fa-regular fa-eye-slash eyeIcon formIcon"
+                        }
+                        onClick={() =>
+                          setShowPassword(
+                            (prevShowPassword) => !prevShowPassword
+                          )
+                        }
+                        aria-hidden="true"
+                      ></i>
+                      <input
+                        name="password"
+                        className="inputField"
+                        onChange={(e) => setPassword(e.target.value)}
+                        onBlur={handleBlur("password")}
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        placeholder="Enter your password"
+                        required
+                      />
+                      {errors.password && (
+                        <p style={{ color: "red", fontSize: "14px" }}>
+                          {errors.password}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                {touchedFields.email && errors.email && (
-                  <p
-                    style={{
-                      color: "red",
-                      fontSize: "14px",
-                      marginBottom: "6px",
-                    }}
-                  >
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-              <div className="psw">
-                <label>Password</label>
-                <div className="psw-inside">
-                  <i className="fa-solid fa-key"></i>
-                  <input
-                    name="password"
-                    onChange={(e) => setPassword(e.target.value)}
-                    onBlur={() => handleInputBlur("password")}
-                    type="password"
-                    value={password}
-                    placeholder="Enter your password"
-                    required
-                  />
+                <div className="identification">
+                  <div className="remember">
+                    <label htmlFor="rememberme">
+                      <input
+                        type="checkbox"
+                        className="rememberme"
+                        id="rememberme"
+                        name="rememberme"
+                      />
+                      Remember me
+                    </label>
+                  </div>
+                  <div className="forgot">
+                    <p className="forgotPass">
+                      <a href="/forgot" title="" className="forgotLink">
+                        Forgot password?
+                      </a>
+                    </p>
+                  </div>
                 </div>
-                {touchedFields.password && errors.password && (
-                  <p
-                    style={{
-                      color: "red",
-                      fontSize: "14px",
-                      marginBottom: "6px",
-                    }}
-                  >
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-              <div className="identification">
-                <div className="remember">
-                  <input type="checkbox" name="remember-me" />
-                  <label>Remember&nbsp;me</label>
+                <div>
+                  {errors.LOGIN && (
+                    <p
+                      style={{
+                        color: "red",
+                        fontSize: "14px",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      {errors.LOGIN}
+                    </p>
+                  )}
                 </div>
-                <div className="forgot">
-                  <p>
-                    <a href="/forgot">Forgot password?</a>
-                  </p>
+                <div className="submit">
+                  <button type="submit" className="buttonSubmit">
+                    Log In
+                  </button>
                 </div>
-              </div>
-              <div className="submit">
-                <button
-                  type="submit"
-                  onClick={submithandler}
-                  className="submit"
-                >
-                  Log In
-                </button>
               </div>
             </form>
           </div>
-          <div className="right">
-            <h1>Empower Fundraising Heroes: Your Appeal Sparks Change!</h1>
-            <div className="help-img">
-              <img src="images/login-image.png" alt="Help Each Other" />
+          <div className="rightSection">
+            <div className="comment">
+              <h1 className="coreValue">
+                Empower Fundraising Heroes: Your
+                <br />
+                Appeal Sparks Change!
+              </h1>
             </div>
           </div>
         </section>
       </div>
     </>
+  ) : (
+    <Loading />
   );
 };
 
