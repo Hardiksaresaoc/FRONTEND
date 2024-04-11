@@ -685,7 +685,6 @@
   }
   .head .headerNav .dropdown:hover .dropdown-content {
     display: block;
-    padding: 10px;
     font-weight: 500;
   }
   .head .headerNav .dropdown:hover .dropdown-content .dropdownProject:hover {

@@ -47,7 +47,7 @@ const Admin = () => {
   };
   return (
     <>
-      <Header rolename={"Admin"} role={"ADMIN"} />
+      {/* <Header rolename={"Admin"} role={"ADMIN"} /> */}
       <h1>Admin Page</h1>
       {user && (
         <div>

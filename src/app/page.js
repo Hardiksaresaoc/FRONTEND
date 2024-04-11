@@ -21,7 +21,7 @@ const App = () => {
 
   return (
     <div>
-      <Header />
+      {/* <Header />     */}
       This is a sample code
       {/* {value} */}
     </div>

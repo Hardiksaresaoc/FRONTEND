@@ -80,7 +80,7 @@ const LoginPage = () => {
       }
     }
   };
-
+ 
   const handleBlur = (field) => (e) => {
     const { value } = e.target;
     if (!value.trim()) {
@@ -126,7 +126,7 @@ const LoginPage = () => {
   return !loggedin ? (
     <>
       <div className="main">
-        <Header />
+        {/* <Header /> */}
         <section className="mainSection">
           <div className="leftSection">
             <form className="mainForm" onSubmit={submithandler}>
