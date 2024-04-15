@@ -11,9 +11,9 @@ export default function Header({ role, rolename }) {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const router = useRouter();
   const pathname = usePathname();
-  console.log(pathname);
+  // console.log(pathname);
   const { user } = useAuth(role);
-  console.log(pathname);
+  // console.log(pathname);
   const handleLogout = () => {
     removeCookie("token");
     router.push("/login");
