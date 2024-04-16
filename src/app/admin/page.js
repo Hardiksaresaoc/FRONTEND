@@ -1,77 +1,107 @@
 "use client";
-import { Cookies } from "react-cookie";
-import Header from "@/component/header";
-import useAuth from "@/context/auth";
-import axios from "axios";
 import { useEffect, useState } from "react";
+import axios from "axios";
+// import "./module.fundraiser.css";
+import "../fundraiser/dashboard/module.dashboard.css";
 
-const Admin = () => {
-  const { user } = useAuth("ADMIN"); // Example allowed roles
-  const [token, setToken] = useState(""); // Initialize token with an empty string
-  const cookies = new Cookies();
-  const [userData, setUserData] = useState([]);
+import Loading from "@/app/loading";
+import useAuth from "@/context/auth";
+import Sidebar from "../../component/sidebar";
+export default function FundraiserPage() {
+  const { user } = useAuth("ADMIN");
+
+  const [fundraisers, setFundraisers] = useState([]);
+  const [error, setError] = useState(null);
+  const [active, setactive] = useState();
 
   useEffect(() => {
-    const data = cookies.get("token");
-    setToken(data || ""); // Set token to an empty string if data is undefined
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://661b896f65444945d04faf34.mockapi.io/fundrasier"
+        );
+        setFundraisers(response.data); // Set the response data to the state
+      } catch (error) {
+        setError("Error fetching fundraisers. Please try again later.");
+        console.error("Error fetching fundraisers:", error);
+      }
+    };
+    fetchData();
   }, []);
 
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  const viewAllUser = async () => {
-    try {
-      const userdata = await axios.get(
-        "http://localhost:3001/admin/user",
-        config
-      );
-      setUserData(userdata.data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
-  const deleteUser = async (id) => {
-    try {
-      await axios.delete(
-        `http://localhost:3001/admin/user/delete/${id}`,
-        config
-      );
-      setUserData(userData.filter((user) => user.id !== id));
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    }
-  };
-  return (
-    <>
-      <Header rolename={"Admin"} role={"ADMIN"} />
-      <h1>Admin Page</h1>
-      {user && (
-        <div>
-          <h2>
-            {user.firstName} {user.lastName}
-            {user.profle || "hello"}
-          </h2>
-          <button onClick={viewAllUser}>View All User</button>
-          <div className="user-cards">
-            {userData.map((user) => (
-              <div key={user.id} className="user-card">
-                <h3>
-                  {user.firstName} {user.lastName}
-                </h3>
-                <p>Email: {user.email}</p>
-                <p>Role: {user.role}</p>
-                <button onClick={() => deleteUser(user.id)}>Delete</button>
-              </div>
-            ))}
-          </div>
+  return user ? (
+    <div style={{ display: "flex" }}>
+      <Sidebar />
+      <section>
+        <div className="rightSection">
+          <h1>Fundraisers</h1>
+          {error && (
+            <p
+              style={{ color: "red", fontSize: "120%", marginBottom: "0.5em" }}
+              className="error "
+            >
+              {error}
+            </p>
+          )}
+          <table>
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>URL</th>
+                <th>Status</th>
+                <th>Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {fundraisers.map((fundraiser) => (
+                <tr key={fundraiser.id}>
+                  <td>{fundraiser.id}</td>
+                  <td>{fundraiser.name}</td>
+                  <td>{fundraiser.email}</td>
+                  <td>{fundraiser.phoneNumber}</td>
+                  <td>{fundraiser.url}</td>
+                  <td>
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        onChange={() => {
+                          // Toggle the status locally
+                          const updatedStatus = !fundraiser.status;
+                          // Update the status in the state
+                          setFundraisers((prevFundraisers) =>
+                            prevFundraisers.map((item) =>
+                              item.id === fundraiser.id
+                                ? { ...item, status: updatedStatus }
+                                : item
+                            )
+                          );
+                          // Make API request to update status
+                          axios.put(
+                            `https://661b896f65444945d04faf34.mockapi.io/fundrasier/${fundraiser.id}`,
+                            { status: updatedStatus }
+                          );
+                        }}
+                        defaultChecked={fundraiser.status}
+                      />
+                      <span className="slider round"></span>
+                    </label>
+                  </td>
+                  <td>
+                    <a href="#">
+                      <i className="fa-solid fa-pen-to-square editText"></i>
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
-    </>
+      </section>
+    </div>
+  ) : (
+    <Loading />
   );
-};
-
-export default Admin;
+}

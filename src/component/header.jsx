@@ -4,13 +4,16 @@ import Link from "next/link";
 import { Button } from "@nextui-org/react";
 import { useCookies } from "react-cookie";
 import useAuth from "@/context/auth";
+import { usePathname } from "next/navigation";
 import "./module.header.css"; // Assuming this imports your custom styles
 
 export default function Header({ role, rolename }) {
   const [cookies, setCookie, removeCookie] = useCookies(["token"]);
   const router = useRouter();
+  const pathname = usePathname();
+  // console.log(pathname);
   const { user } = useAuth(role);
-
+  // console.log(pathname);
   const handleLogout = () => {
     removeCookie("token");
     router.push("/login");
@@ -20,7 +23,7 @@ export default function Header({ role, rolename }) {
     <header className="head">
       <div className="logo">
         <img
-          src="images/ProjectLogo.png"
+          src="/images/ProjectLogo.png"
           alt="Webpage Logo"
           className="logoImg"
           height="100"
@@ -31,7 +34,9 @@ export default function Header({ role, rolename }) {
         <ul className="headerUL">
           <li className="headerLi">
             <Link legacyBehavior href="/">
-              <a className="navlink active">Home</a>
+              <a className={`navlink ${pathname == "/login" ? "active" : ""}`}>
+                Home
+              </a>
             </Link>
           </li>
           <li className="dropdownLi">
@@ -41,19 +46,34 @@ export default function Header({ role, rolename }) {
                 <i className="fa fa-caret-down downIcon"></i>
               </button>
               <div className="dropdown-content">
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/project-pithu/"
+                  className="dropdownProject"
+                >
                   Project PITHU
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/project-sehat/"
+                  className="dropdownProject"
+                >
                   Project SEHAT
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/project-saksham/"
+                  className="dropdownProject"
+                >
                   Project SAKSHAM
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/project-sashakt/"
+                  className="dropdownProject"
+                >
                   Project SASHAKT
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/project-insaniyat/"
+                  className="dropdownProject"
+                >
                   Project INSANIYAT
                 </a>
               </div>
@@ -66,21 +86,36 @@ export default function Header({ role, rolename }) {
                 <i className="fa fa-caret-down downIcon"></i>
               </button>
               <div className="dropdown-content">
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/vision-mission/"
+                  className="dropdownProject"
+                >
                   Vission & Mission
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/team/"
+                  className="dropdownProject"
+                >
                   Team
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/letters-of-appreciation/"
+                  className="dropdownProject"
+                >
                   Letters of
                   <br />
                   Appreciation
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/legal-status/"
+                  className="dropdownProject"
+                >
                   Legal Status
                 </a>
-                <a href="#" className="dropdownProject">
+                <a
+                  href="https://supportourheroes.in/tax-exemption-donation-faqs/"
+                  className="dropdownProject"
+                >
                   Tax Exemption
                   <br />
                   Donation FAQs
@@ -89,12 +124,12 @@ export default function Header({ role, rolename }) {
             </div>
           </li>
           <li className="headerLi">
-            <Link legacyBehavior href="#">
+            <Link legacyBehavior href="https://supportourheroes.in/our-faqs/">
               <a className="navlink">Our FAQs</a>
             </Link>
           </li>
           <li className="headerLi">
-            <Link legacyBehavior href="#">
+            <Link legacyBehavior href="https://supportourheroes.in/contact-us/">
               <a className="navlink">Contact Us</a>
             </Link>
           </li>

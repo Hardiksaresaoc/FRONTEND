@@ -11,6 +11,7 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const [loggedin, setLoggedin] = useState(false);
@@ -52,6 +53,7 @@ const LoginPage = () => {
     if (!validateForm()) return;
 
     try {
+      setLoading(true); // Start loading
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -78,6 +80,8 @@ const LoginPage = () => {
           loginError: "Email or password is incorrect.",
         });
       }
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -126,7 +130,7 @@ const LoginPage = () => {
   return !loggedin ? (
     <>
       <div className="main">
-        <Header />
+        {/* <Header /> */}
         <section className="mainSection">
           <div className="leftSection">
             <form className="mainForm" onSubmit={submithandler}>
@@ -239,7 +243,7 @@ const LoginPage = () => {
                 </div>
                 <div className="submit">
                   <button type="submit" className="buttonSubmit">
-                    Log In
+                    {loading ? <Loading /> : "Log In"}
                   </button>
                 </div>
               </div>

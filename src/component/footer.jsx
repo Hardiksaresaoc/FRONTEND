@@ -3,7 +3,7 @@ import React from "react";
 import "./module.footer.css";
 export default function Footer() {
   return (
-    <Footer className="mainFooter">
+    <footer className="mainFooter">
       <div className="upperFooter">
         <div className="aboutUs">
           <h3>About Us</h3>
@@ -61,7 +61,7 @@ export default function Footer() {
         <div className="scanner">
           <h3>Scan & Donate</h3>
           <img
-            src="asset/ngo qr code.png"
+            src="/images/ngo-qr-code.png"
             alt="Scan & Donate"
             height="150"
             width="150"
@@ -83,7 +83,7 @@ export default function Footer() {
         <div className="socialmedia">
           <Link href="#">
             <img
-              src="asset/facebook().png"
+              src="/images/facebook().png"
               alt="facebook"
               height="50"
               width="50"
@@ -92,7 +92,7 @@ export default function Footer() {
           </Link>
           <Link href="#">
             <img
-              src="asset/twitter().png"
+              src="/images/twitter().png"
               alt="twitter"
               height="50"
               width="50"
@@ -101,7 +101,7 @@ export default function Footer() {
           </Link>
           <Link href="#">
             <img
-              src="asset/youtube().png"
+              src="/images/youtube().png"
               alt="youtube"
               height="50"
               width="50"
@@ -110,7 +110,7 @@ export default function Footer() {
           </Link>
           <Link href="#">
             <img
-              src="asset/linkedin().png"
+              src="/images/linkedin().png"
               alt="linkedin"
               height="50"
               width="50"
@@ -120,6 +120,6 @@ export default function Footer() {
         </div>
         <p className="copyright">Copyright © 2022 Support Our Heroes</p>
       </div>
-    </Footer>
+    </footer>
   );
 }
