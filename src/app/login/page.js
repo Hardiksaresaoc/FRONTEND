@@ -68,7 +68,7 @@ const LoginPage = () => {
         setErrors({
           LOGIN: "email or password error",
         });
-      } else {
+      } else {  
         setCookie("token", data.token);
         handleLoginSuccess(data.token);
       }

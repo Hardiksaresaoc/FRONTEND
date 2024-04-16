@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useCookies } from "react-cookie";
+
 // import "./module.fundraiser.css";
 
 import "../../fundraiser/dashboard/module.dashboard.css";
@@ -8,6 +10,7 @@ import Loading from "@/app/loading";
 import useAuth from "@/context/auth";
 import Sidebar from "../../../component/sidebar";
 export default function FundraiserPage() {
+  const [cookies, setCookie] = useCookies(["token"]);
   const { user } = useAuth("ADMIN");
 
   const [fundraisers, setFundraisers] = useState([]);
@@ -15,10 +18,15 @@ export default function FundraiserPage() {
   const [active, setactive] = useState();
 
   useEffect(() => {
+    const token = cookies.token;
+    setCookie(token);
+    const headers = { 'Authorization': `Bearer ${token}` };
+    console.log(token)
+    
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "https://661b896f65444945d04faf34.mockapi.io/fundrasier"
+          "http://localhost:3001/admin/fundraiser",{headers}
         );
         setFundraisers(response.data); // Set the response data to the state
       } catch (error) {
@@ -57,12 +65,12 @@ export default function FundraiserPage() {
             </thead>
             <tbody>
               {fundraisers.map((fundraiser) => (
-                <tr key={fundraiser.id}>
-                  <td>{fundraiser.id}</td>
-                  <td>{fundraiser.name}</td>
+                <tr key={fundraiser.fundraiser_id}>
+                  <td>{fundraiser.f_id}</td>
+                  <td>{fundraiser.firstName}</td>
                   <td>{fundraiser.email}</td>
-                  <td>{fundraiser.phoneNumber}</td>
-                  <td>{fundraiser.url}</td>
+                  <td>{fundraiser.mobile_number}</td>
+                  <td>http://localhost:3000/fundraiser/{fundraiser.fundraiser_id}</td>
                   <td>
                     <label className="switch">
                       <input
@@ -79,8 +87,8 @@ export default function FundraiserPage() {
                             )
                           );
                           // Make API request to update status
-                          axios.put(
-                            `https://661b896f65444945d04faf34.mockapi.io/fundrasier/${fundraiser.id}`,
+                          axios.post(
+                            `http://localhost:3001/admin/fundraiser/status/${fundraiser.fundraiser_id}`,
                             { status: updatedStatus }
                           );
                         }}
