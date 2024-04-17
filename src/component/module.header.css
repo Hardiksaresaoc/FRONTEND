@@ -892,7 +892,7 @@
   .mainSection .rightSection .comment {
     height: 627px;
     width: 100%;
-    background-image: url(../../public/images/ProjectSection.png);
+    background-image: url(/images/asset/ProjectSection.png);
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center;

@@ -9,6 +9,7 @@ import "../../fundraiser/dashboard/module.dashboard.css";
 import Loading from "@/app/loading";
 import useAuth from "@/context/auth";
 import Sidebar from "../../../component/sidebar";
+// import { headers } from "next/headers";
 export default function FundraiserPage() {
   const [cookies, setCookie] = useCookies(["token"]);
   const { user } = useAuth("ADMIN");
@@ -17,10 +18,13 @@ export default function FundraiserPage() {
   const [error, setError] = useState(null);
   const [active, setactive] = useState();
 
+
+  const [header, setheader] = useState()
   useEffect(() => {
     const token = cookies.token;
     setCookie(token);
     const headers = { 'Authorization': `Bearer ${token}` };
+    setheader(headers);
     console.log(token)
     
     const fetchData = async () => {
@@ -87,9 +91,10 @@ export default function FundraiserPage() {
                             )
                           );
                           // Make API request to update status
-                          axios.post(
-                            `http://localhost:3001/admin/fundraiser/status/${fundraiser.fundraiser_id}`,
-                            { status: updatedStatus }
+                          console.log("aa",header)
+                          axios.put(
+                            `http://localhost:3001/admin/fundraiser/status/${fundraiser.fundraiser_id}`,header,
+                            // { status: updatedStatus }
                           );
                         }}
                         defaultChecked={fundraiser.status}
