@@ -5,7 +5,7 @@ import { useCookies } from "react-cookie";
 
 // import "./module.fundraiser.css";
 
-import "../../fundraiser/dashboard/module.dashboard.css";
+import "../../fundraiser/[id]/dashboard/module.dashboard.css";
 import Loading from "@/app/loading";
 import useAuth from "@/context/auth";
 import Sidebar from "../../../component/sidebar";
@@ -17,22 +17,24 @@ export default function FundraiserPage() {
   const [fundraisers, setFundraisers] = useState([]);
   const [error, setError] = useState(null);
   const [active, setactive] = useState();
-
-
-  const [header, setheader] = useState()
+  const [statusActive, setstatusActive] = useState("");
+  const [header, setheader] = useState();
   useEffect(() => {
     const token = cookies.token;
     setCookie(token);
-    const headers = { 'Authorization': `Bearer ${token}` };
+    const headers = { Authorization: `Bearer ${token}` };
     setheader(headers);
-    console.log(token)
-    
+    console.log(token);
+
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3001/admin/fundraiser",{headers}
+          "http://localhost:3001/admin/fundraiser",
+          { headers }
         );
-        setFundraisers(response.data); // Set the response data to the state
+        // Sort the fundraisers based on f_id before setting the state
+        const sortedFundraisers = response.data.sort((a, b) => a.f_id - b.f_id);
+        setFundraisers(sortedFundraisers);
       } catch (error) {
         setError("Error fetching fundraisers. Please try again later.");
         console.error("Error fetching fundraisers:", error);
@@ -74,12 +76,14 @@ export default function FundraiserPage() {
                   <td>{fundraiser.firstName}</td>
                   <td>{fundraiser.email}</td>
                   <td>{fundraiser.mobile_number}</td>
-                  <td>http://localhost:3000/fundraiser/{fundraiser.fundraiser_id}</td>
+                  <td>
+                    http://localhost:3000/fundraiser/{fundraiser.fundraiser_id}
+                  </td>
                   <td>
                     <label className="switch">
                       <input
                         type="checkbox"
-                        onChange={() => {
+                        onChange={async () => {
                           // Toggle the status locally
                           const updatedStatus = !fundraiser.status;
                           // Update the status in the state
@@ -90,14 +94,15 @@ export default function FundraiserPage() {
                                 : item
                             )
                           );
-                          // Make API request to update status
-                          console.log("aa",header)
-                          axios.put(
-                            `http://localhost:3001/admin/fundraiser/status/${fundraiser.fundraiser_id}`,header,
-                            // { status: updatedStatus }
-                          );
+                          // api  request to update status
+                          const response = await axios({
+                            method: "post",
+                            url: `http://localhost:3001/admin/fundraiser/status/${fundraiser.fundraiser_id}`,
+                            headers: header,
+                          });
+                          setstatusActive(response.data.status);
                         }}
-                        defaultChecked={fundraiser.status}
+                        defaultChecked={fundraiser.status === "active"}
                       />
                       <span className="slider round"></span>
                     </label>

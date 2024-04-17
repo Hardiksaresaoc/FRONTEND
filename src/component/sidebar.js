@@ -9,7 +9,15 @@ export default function Sidebar() {
     <>
       <div className="leftSection">
         <div className="tab">
-          <a href="generatecode">
+          <a href="/admin">
+            <button
+              type="submit"
+              className={`tabButton ${pathname === "/admin" ? "active" : ""}`}
+            >
+              <i className="fa-regular fa-circle mainCircle"></i> Dashboad
+            </button>
+          </a>
+          <a href="/admin/generatecode">
             <button
               type="submit"
               className={`tabButton ${
@@ -19,7 +27,7 @@ export default function Sidebar() {
               <i className="fa-regular fa-circle mainCircle"></i> Generate
             </button>
           </a>
-          <a href="fundraisers">
+          <a href="/admin/fundraisers">
             <button
               type="submit"
               className={`tabButton ${
@@ -29,7 +37,7 @@ export default function Sidebar() {
               <i className="fa-regular fa-circle mainCircle"></i> Fundraisers
             </button>
           </a>
-          <a href="adddonation">
+          <a href="/admin/adddonation">
             <button
               type="submit"
               className={`tabButton ${

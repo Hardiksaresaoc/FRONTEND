@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 // import "./module.fundraiser.css";
-import "../fundraiser/dashboard/module.dashboard.css";
+import "../fundraiser/[id]/dashboard/module.dashboard.css";
 
 import Loading from "@/app/loading";
 import useAuth from "@/context/auth";

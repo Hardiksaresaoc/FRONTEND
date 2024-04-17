@@ -4,21 +4,22 @@ import { useRouter } from "next/navigation";
 import useAuth from "@/context/auth";
 import Sidebar from "../../../component/sidebar";
 import { Cookies } from "react-cookie";
+import axios from "axios";
 
 const GeneratePage = () => {
   const cookies = new Cookies();
   const router = useRouter();
   const { user } = useAuth(["ADMIN"]);
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [firstName, setName] = useState("");
   const [token, settoken] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   useEffect(() => {
     const data = cookies.get("token");
-    settoken(data || ""); // Set token to an empty string if data is undefined
+    settoken(data); // Set token to an empty string if data is undefined
   }, []);
-  console.log(token);
+
   const config = {
     headers: {
       "Content-Type": "application/json",
@@ -32,16 +33,18 @@ const GeneratePage = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3001/admin/generate", {
-        method: "POST",
-        config,
-        body: JSON.stringify({ email, name }),
-      });
-
-      if (!response.ok) {
+      const response = await axios.post(
+        "http://localhost:3001/admin/generate",
+        {
+          email,
+          firstName,
+        },
+        config
+      );
+      console.log("Response data:", response.status); // Log response data
+      if (!response.status == 201) {
         throw new Error("Failed to generate.");
       }
-
       router.push("/success");
     } catch (err) {
       setError(err.message || "Something went wrong.");
@@ -85,7 +88,7 @@ const GeneratePage = () => {
             Name:
             <input
               type="text"
-              value={name}
+              value={firstName}
               onChange={(e) => setName(e.target.value)}
             />
           </label>

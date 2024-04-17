@@ -1,6 +1,4 @@
-'use client'
-
-import Header from "@/component/header";
+"use client";
 import { useState } from "react";
 
 export default function page({ params }) {
